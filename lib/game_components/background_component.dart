@@ -2,13 +2,12 @@ import 'package:audioplayers/src/audioplayer.dart';
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
 
+// Responsible for loading the backgroundimage and looping the background music
 class BackgroundComponent extends SpriteComponent {
   AudioPlayer? audioPlayer;
 
-  BackgroundComponent()
-      : super(
-          priority: 1,
-        );
+  BackgroundComponent() : super(priority: 1);
+
   @override
   Future<void> onLoad() async {
     await super.onLoad();

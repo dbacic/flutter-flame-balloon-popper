@@ -15,3 +15,9 @@ In order to run the game you need to:
 In order to style the game as you wish, you will need to go to the **assets/images** folder and change the balloon sprites and background. Keep in mind that if you change the number of balloon sprites taht you also need to go to *balloon_component.dart* and on line 108 change the number from 3 to the number of different sprites that you added. If you feel really fancy you can also replace the explosion with [animated sprites](https://docs.flame-engine.org/1.0.0/images.html#animation) 
 
 You can also customize the background music and pop sound by going to the **assets/audio** folder and replacing the mp3 files with something you like.
+
+
+### Notes
+
+- Images aren't optimized, using smaller sizes will benefit if running apps on low end devices
+- Project is set up for Android, Windows and Web. Running it on iOS or linux may requier additional configuration

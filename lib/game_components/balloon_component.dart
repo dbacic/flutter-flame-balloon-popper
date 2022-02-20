@@ -5,20 +5,22 @@ import 'package:flame/components.dart';
 import 'package:flame/input.dart';
 import 'package:flame_audio/flame_audio.dart';
 
-import '../baloon_game.dart';
+import '../levels/balloon_level.dart';
 
-class BaloonComponent extends SpriteComponent
-    with Tappable, HasGameRef<BaloonGame> {
-  BaloonComponent(this.offset)
+// Responsible for spawning a balloon that can have a different sprite,
+// movement, pop efect and sound as well as sending the event to the bloc
+class BalloonComponent extends SpriteComponent
+    with Tappable, HasGameRef<BalloonLevel> {
+  final int _offset;
+  Vector2 _gameArea = Vector2.zero();
+  bool _isMoving = true;
+  int _baloonNum = 0;
+
+  BalloonComponent(this._offset)
       : super(
           size: Vector2.all(64),
           priority: 5,
         );
-  int offset;
-  Vector2 gameArea = Vector2.zero();
-  bool isMoving = true;
-
-  int baloonNum = 0;
 
   @override
   Future<void> onLoad() async {
@@ -32,7 +34,7 @@ class BaloonComponent extends SpriteComponent
   void onGameResize(Vector2 gameSize) {
     print("Game area is: $gameSize");
     super.onGameResize(gameSize);
-    gameArea = gameSize;
+    _gameArea = gameSize;
 
     num baloonSize =
         (gameSize.y < gameSize.x) ? gameSize.x / 8 : gameSize.y / 8;
@@ -54,18 +56,18 @@ class BaloonComponent extends SpriteComponent
 
   @override
   bool onTapUp(TapUpInfo info) {
-    if (!isMoving) {
+    if (!_isMoving) {
       return true;
     }
 
     print("Baloon $hashCode popped");
-    gameRef.read<GameStateCubit>().add(AddScoreGameEvent((baloonNum + 1) * 2));
+    gameRef.read<GameStateCubit>().add(AddScoreGameEvent((_baloonNum + 1) * 2));
     _loadExplosion();
     return true;
   }
 
   void _move(double dt) {
-    if (!isMoving) {
+    if (!_isMoving) {
       return;
     }
 
@@ -73,38 +75,37 @@ class BaloonComponent extends SpriteComponent
 
     // if ballon goes of the top
     if (position.y < -size.y) {
-      // removeFromParent();
       _respwn();
     }
   }
 
   double _randomXPosition() {
-    num x = Random().nextInt(gameArea.x.toInt());
-    return x.clamp(size.x / 2, gameArea.x - size.x / 2).toDouble();
+    num x = Random().nextInt(_gameArea.x.toInt());
+    return x.clamp(size.x / 2, _gameArea.x - size.x / 2).toDouble();
   }
 
   double _randomYPosition() {
-    return Random().nextInt(size.y.toInt()).toDouble() * offset * 4;
+    return Random().nextInt(size.y.toInt()).toDouble() * _offset * 4;
   }
 
   void _loadExplosion() async {
     FlameAudio.play("pop.mp3");
     sprite = await Sprite.load('explosion.png');
-    isMoving = false;
+    _isMoving = false;
 
     Future.delayed(const Duration(milliseconds: 500), () async {
-      isMoving = true;
+      _isMoving = true;
       _respwn();
     });
   }
 
   void _respwn() async {
-    position = Vector2(_randomXPosition(), gameArea.y + _randomYPosition());
+    position = Vector2(_randomXPosition(), _gameArea.y + _randomYPosition());
     sprite = await Sprite.load(_getBallon());
   }
 
   String _getBallon() {
-    baloonNum = Random().nextInt(3);
-    return "baloon-$baloonNum.png";
+    _baloonNum = Random().nextInt(3);
+    return "balloon-$_baloonNum.png";
   }
 }

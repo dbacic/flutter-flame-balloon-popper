@@ -13,9 +13,10 @@ final regular = TextPaint(
   style: style,
 );
 
+// Showing the current score and responding to blocs 'new' state
 class ScoreComponent extends TextComponent
     with BlocComponent<GameStateCubit, GameCurrentState> {
-  Vector2 gameArea = Vector2.zero();
+  Vector2 _gameArea = Vector2.zero();
 
   ScoreComponent()
       : super(
@@ -24,9 +25,8 @@ class ScoreComponent extends TextComponent
 
   @override
   void onGameResize(Vector2 gameSize) {
-    print("Game area is: $gameSize");
     super.onGameResize(gameSize);
-    gameArea = gameSize;
+    _gameArea = gameSize;
   }
 
   @override
@@ -34,7 +34,7 @@ class ScoreComponent extends TextComponent
     await super.onLoad();
     textRenderer = regular;
     text = "0";
-    position = Vector2(gameArea.x - 50, 40);
+    position = Vector2(_gameArea.x - 50, 40);
     anchor = Anchor.center;
   }
 
